@@ -1,41 +1,49 @@
 import "./styles/App.css"
 
 import housesData from "./data.json"
-
-import HouseCard from "./components/HouseCard"
 import { useState } from "react"
-import HouseCardCopy from "./components/HouseCardCopy"
 
 function App() {
   const [search, setSearch] = useState("")
+  const [available, setAvailable] = useState(false)
+  const [type, setType] = useState("")
 
-  function setSearchInput(e) {
+  const handletext = (e) => {
     setSearch(e.target.value)
-    console.log(search)
   }
 
-  const houseOrigin = {
-    name: "Modern flat",
-    type: "House",
-    desc: "This is the perfect house for you, come to visit it you'll love it ",
-    img: "https://cf.bstatic.com/images/hotel/max1024x768/177/177622915.jpg",
-    available: true,
+  const handleCheckbox = (e) => {
+    setAvailable(!available)
+  }
+
+  const handleSelect = (e) => {
+    setType(e.target.value)
   }
 
   return (
     <>
-      <input type="text" value={search} onChange={(e) => setSearchInput(e)} />
-      <div className="App">
-        {housesData
-          .filter((house) =>
-            house.name.toLowerCase().includes(search.toLowerCase())
-          )
-          .map((house) => (
-            <HouseCard key={house.name} house={house} />
-          ))}
-      </div>
-      {/* passing with spread */}
-      <HouseCardCopy {...houseOrigin} />
+      <input type="text" onChange={handletext} />
+      <input type="checkbox" onChange={handleCheckbox} />
+      <select onChange={handleSelect}>
+        <option value="All">All</option>
+        <option value="Flat">Flat</option>
+        <option value="House">House</option>
+      </select>
+      {housesData
+        .filter((elem) => {
+          return elem.name
+            .toLocaleLowerCase()
+            .includes(search.toLocaleLowerCase())
+        })
+        .filter((elemAvailable) => {
+          return elemAvailable.available === available
+        })
+        .filter((elemAvailable) => {
+          return elemAvailable.type === type || type === "All"
+        })
+        .map((house, index) => (
+          <div key={house.name + index + new Date()}>{house.name}</div>
+        ))}
     </>
   )
 }
